@@ -1,15 +1,6 @@
-pipeline {
-
-    agent {
-  docker {
-    image 'node:14-alpine'
-  }
+node {
+    withDockerRegistry(credentialsId: 'AP5Porky4us6q635uq3UtD85Xvj', url: 'http://vps-da3fb8c2.vps.ovh.ca:8082') {
+        git 'https://github.com/dutmond/Jenkinsfile.git'
+    }    
 }
-    stages {
-        stage('build') {
-            steps {
-                sh 'npm --version'
-            }
-        }
-    }
-}
+ 
