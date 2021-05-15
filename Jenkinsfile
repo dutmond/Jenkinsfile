@@ -30,7 +30,10 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                    git credentialsId: '2775d8b3-f9a8-4ae9-a43e-279df01fa543', url: 'https://github.com/dutmond/Jenkinsfile.git'                    
+                        			script {
+    				def scmVars = checkout scm
+    				git "$scmVars.GIT_URL"
+    				}                 
             }
         }
     }
