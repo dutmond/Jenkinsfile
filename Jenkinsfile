@@ -1,5 +1,5 @@
 node {
-    git 'https://github.com/dutmond/Jenkinsfile.git'
+    git credentialsId: '2775d8b3-f9a8-4ae9-a43e-279df01fa543', url: 'https://github.com/dutmond/Jenkinsfile.git'
     withDockerRegistry(credentialsId: 'AP5Porky4us6q635uq3UtD85Xvj', url: 'http://vps-da3fb8c2.vps.ovh.ca:8082') {
         docker.build('myapp').push('latest')
     }    
