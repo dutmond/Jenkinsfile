@@ -24,7 +24,9 @@ pipeline {
 **/
 
 pipeline {
-    agent none
+        agent {
+        label 'master'
+    }
     stages {
         stage('build') {
             steps {
