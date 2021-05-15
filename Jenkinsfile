@@ -5,7 +5,7 @@ node {
         docker.build('myapp').push('latest')
     }    
 }
-**/
+
 
 pipeline {
     agent none
@@ -21,3 +21,15 @@ pipeline {
     }
 }
 
+**/
+
+pipeline {
+    agent none
+    stages {
+        stage('build') {
+            steps {
+                    git credentialsId: '2775d8b3-f9a8-4ae9-a43e-279df01fa543', url: 'https://github.com/dutmond/Jenkinsfile.git'                    
+            }
+        }
+    }
+}
