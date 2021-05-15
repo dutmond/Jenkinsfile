@@ -1,40 +1,45 @@
-/* 
 node {
-      withDockerRegistry(credentialsId: 'AP5Porky4us6q635uq3UtD85Xvj', url: 'http://vps-da3fb8c2.vps.ovh.ca:8082') {
-        git credentialsId: '2775d8b3-f9a8-4ae9-a43e-279df01fa543', url: 'https://github.com/dutmond/Jenkinsfile.git'
-        docker.build('myapp').push('latest')
-    }    
-}
+    git url: 'https://github.com/jfrogdev/project-examples.git'
 
+    // Get Artifactory server instance, defined in the Artifactory Plugin administration page.
+    def server = Artifactory.server "SERVER_ID"
 
-pipeline {
-    agent none
-    stages {
-        stage('build') {
-            steps {
-                withDockerRegistry(credentialsId: 'AP5Porky4us6q635uq3UtD85Xvj', url: 'http://vps-da3fb8c2.vps.ovh.ca:8082') {
-                    git credentialsId: '2775d8b3-f9a8-4ae9-a43e-279df01fa543', url: 'https://github.com/dutmond/Jenkinsfile.git'
-                    docker.build('myapp').push('latest')
-                }    
-            }
-        }
-    }
-}
+    // Read the upload spec and upload files to Artifactory.
+    def downloadSpec =
+            '''{
+            "files": [
+                {
+                    "pattern": "libs-snapshot-local/*.zip",
+                    "target": "dependencies/",
+                    "props": "p1=v1;p2=v2"
+                }
+            ]
+        }'''
 
-**/
+    def buildInfo1 = server.download spec: downloadSpec
 
-pipeline {
-        agent {
-        label 'master'
-    }
-    stages {
-        stage('build') {
-            steps {
-                        			script {
-    				def scmVars = checkout scm
-    				git "$scmVars.GIT_URL"
-    				}                 
-            }
-        }
-    }
+    // Read the upload spec which was downloaded from github.
+    def uploadSpec =
+            '''{
+            "files": [
+                {
+                    "pattern": "resources/Kermit.*",
+                    "target": "libs-snapshot-local",
+                    "props": "p1=v1;p2=v2"
+                },
+                {
+                    "pattern": "resources/Frogger.*",
+                    "target": "libs-snapshot-local"
+                }
+            ]
+        }'''
+
+    // Upload to Artifactory.
+    def buildInfo2 = server.upload spec: uploadSpec
+
+    // Merge the upload and download build-info objects.
+    buildInfo1.append buildInfo2
+
+    // Publish the build to Artifactory
+    server.publishBuildInfo buildInfo1
 }
